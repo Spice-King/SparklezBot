@@ -1,0 +1,20 @@
+{
+  "name": "SparklezBot",
+  "version": "1.0.0",
+  "private": true,
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Spice-King",
+  "license": "MIT",
+  "dependencies": {
+    "async": "^0.9.0",
+    "debug": "^2.1.2",
+    "googleapis": "^2.0.0",
+    "moment": "^2.9.0",
+    "snoocore": "^2.7.2"
+  }
+}
