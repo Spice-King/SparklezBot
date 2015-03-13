@@ -136,7 +136,7 @@ function pollReddit(cb) {
   // cb(null,"Poll Reddit is unfinished!");
   // return null;
   reddit('/r/' + config.reddit.subreddit + '/new').get({limit: config.reddit.limitResults, /*count: 1,*/ t: 'hour'}).then(function(data){
-    logRedditPoll(data.data);
+    // logRedditPoll(data.data);
     results = data.data.children.map(function (item) {
       return item.data
     }).filter(function(item){
@@ -205,7 +205,7 @@ function postVideoToReddit(item, cb) {
     logRedditPost(result);
     cb();
   }, function(error){
-    logRedditPost("Got Error! ")
+    logRedditPost("Got Error!")
     logRedditPost(error)
     cb(error)
   })
