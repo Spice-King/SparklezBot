@@ -102,8 +102,10 @@ function setupYoutube(cb) {
 };
 
 function pollYouTube(cb) {
+  logYoutubePoll("Started polling YouTube");
   youtube.playlistItems.list({part: 'contentDetails', playlistId: uploadedPlaylist, maxResults: config.youtube.limitResults}, function (err, results) {
     if (err) {
+      logYoutubePoll("YouTube polling failed at fetching play list items")
       cb("YouTube Error: " + err);
       return;
     }
@@ -112,6 +114,7 @@ function pollYouTube(cb) {
     })
     youtube.videos.list({part: 'snippet,contentDetails', fields: "items(contentDetails,id,snippet)", id: data.join(',')}, function(err, results) {
       if (err) {
+        logYoutubePoll("YouTube polling failed at getting content Details")
         cb(err);
         return;
       }
@@ -127,12 +130,14 @@ function pollYouTube(cb) {
           publishedAt: item.snippet.publishedAt
         }
       })
+      logYoutubePoll("Finished polling YouTube")
       cb(err, finalResults);
     })
   })
 }
 // TODO: make sure that I do get every thing in the past hour.
 function pollReddit(cb) {
+  logRedditPoll("Started polling Reddit.");
   // cb(null,"Poll Reddit is unfinished!");
   // return null;
   reddit('/r/' + config.reddit.subreddit + '/new').get({limit: config.reddit.limitResults, /*count: 1,*/ t: 'hour'}).then(function(data){
@@ -146,8 +151,10 @@ function pollReddit(cb) {
     }).map(function (item){
       return item.url.match(/^https?:\/\/(?:www.)?youtu(?:be.(?:(?:com|ca)\/watch\?v=)|\.be\/)(.+)$/im)[1];
     })
+    logRedditPoll("Finished polling Reddit");
     cb(null, results);
   }, function(error) {
+    logRedditPoll("Reddit Polling failed!")
     cb(error);
   })
 }
