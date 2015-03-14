@@ -1,5 +1,5 @@
 var debug = require('debug');
-var log = debug('bot'),
+log = debug('bot'),
 logPoll = debug('bot:poll'),
 logYoutube = debug('bot:youtube'),
 logReddit = debug('bot:reddit'),
@@ -109,7 +109,7 @@ function pollYouTube(cb) {
       cb("YouTube Error: " + err);
       return;
     }
-    data = results.items.map(function(item){
+    var data = results.items.map(function(item){
       return item.contentDetails.videoId;
     })
     youtube.videos.list({part: 'snippet,contentDetails', fields: "items(contentDetails,id,snippet)", id: data.join(',')}, function(err, results) {
@@ -118,8 +118,8 @@ function pollYouTube(cb) {
         cb(err);
         return;
       }
-      time = moment().subtract(1, 'hour').add(5, 'minutes');
-      finalResults = results.items.filter(function(item){
+      var time = moment().subtract(1, 'hour').add(5, 'minutes');
+      var finalResults = results.items.filter(function(item){
         return time.isBefore(item.snippet.publishedAt);
       }).map(function(item){
         logYoutubePoll(item.snippet.title + " - [" + formatTime(item.contentDetails.duration) + "]");
@@ -142,7 +142,7 @@ function pollReddit(cb) {
   // return null;
   reddit('/r/' + config.reddit.subreddit + '/new').get({limit: config.reddit.limitResults, /*count: 1,*/ t: 'hour'}).then(function(data){
     // logRedditPoll(data.data);
-    results = data.data.children.map(function (item) {
+    var results = data.data.children.map(function (item) {
       return item.data
     }).filter(function(item){
       // logRedditPoll(item.title + " - " + moment.unix(item.created_utc).fromNow() + ' - ' + item.name);
@@ -160,9 +160,9 @@ function pollReddit(cb) {
 }
 
 function formatTime(time) {
-  values = time.match(/PT(?:([0-9]{1,2})H)?(?:([0-9]{1,2})M)?(?:([0-9]{1,2})S)?/)
-  minutes = 60 * (parseInt(values[1]) || 0) + (parseInt(values[2]) || 0);
-  seconds = lpad(values[3] || 0, 2);
+  var values = time.match(/PT(?:([0-9]{1,2})H)?(?:([0-9]{1,2})M)?(?:([0-9]{1,2})S)?/)
+  var minutes = 60 * (parseInt(values[1]) || 0) + (parseInt(values[2]) || 0);
+  var seconds = lpad(values[3] || 0, 2);
   return minutes + ":" + seconds;
 }
 function lpad(value, padding) {
@@ -181,7 +181,7 @@ function pollingLoop () {
       return;
     }
     // logPoll("Work on stuff here.", JSON.stringify( results ) );
-    videosToPost = results[0].filter(function(item){
+    var videosToPost = results[0].filter(function(item){
       return -1 == results[1].indexOf(item.id);
     })
     // logPoll("Videos to post: ", videosToPost);
@@ -189,7 +189,7 @@ function pollingLoop () {
       if (err) {
         logPoll(err);
       } else {
-        titles = videosToPost.map(function(item){return item.title + " - [" + formatTime(item.length) + "] {http://youtube.com/watch?v=" + item.id + "}"}).join(", ");
+        var titles = videosToPost.map(function(item){return item.title + " - [" + formatTime(item.length) + "] {http://youtube.com/watch?v=" + item.id + "}"}).join(", ");
         logPoll("Posted " + videosToPost.length + " video(s) to Reddit! Titles were: " + titles);
       }
     })
@@ -198,7 +198,7 @@ function pollingLoop () {
 }
 
 function postVideoToReddit(item, cb) {
-  logRedditPost("Still can't post, but hey.");
+  // logRedditPost("Still can't post, but hey.");
   // cb("Can't post videos yet!");
   // cb();
   // return;
