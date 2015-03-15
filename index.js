@@ -95,23 +95,46 @@ function setupYoutube(cb) {
       cb("Well poop. Got " + response.pageInfo.totalResults + " channels some how, expected 1.");
       return;
     }
-    var res = response.items[0].contentDetails.relatedPlaylists.uploads;
+    var res = response.items[0].id;
     logYoutubeSetup("Finished setting up Youtube.")
     cb(null, res);
   });
 };
 
+function eliminateDuplicates(arr) {
+  var i,
+      len=arr.length,
+      out=[],
+      obj={};
+  for (i=0;i<len;i++) {
+    obj[arr[i]]=0;
+  }
+  for (i in obj) {
+    out.push(i);
+  }
+  return out;
+}
+
 function pollYouTube(cb) {
   logYoutubePoll("Started polling YouTube");
-  youtube.playlistItems.list({part: 'contentDetails', playlistId: uploadedPlaylist, maxResults: config.youtube.limitResults}, function (err, results) {
+  youtube.activities.list({publishedAfter: moment().subtract(1, 'hour').add(5, 'minutes').toISOString() ,part: 'contentDetails,snippet', channelId: channelId, maxResults: 50}, function (err, results) {
     if (err) {
       logYoutubePoll("YouTube polling failed at fetching play list items")
       cb("YouTube Error: " + err);
       return;
     }
-    var data = results.items.map(function(item){
-      return item.contentDetails.videoId;
+    var data = results.items.filter(function(item){
+      return item.snippet.type === "upload" || item.snippet.type === "playlistItem";
+    }).map(function(item){
+      if (item.contentDetails.upload !== undefined) {
+        return item.contentDetails.upload.videoId;
+      } else if (item.contentDetails.playlistItem !== undefined) {
+        return item.contentDetails.playlistItem.resourceId.videoId;
+      }
+      // return item.contentDetails.videoId;
     })
+    data = eliminateDuplicates(data);
+    // logYoutubePoll(data);
     youtube.videos.list({part: 'snippet,contentDetails', fields: "items(contentDetails,id,snippet)", id: data.join(',')}, function(err, results) {
       if (err) {
         logYoutubePoll("YouTube polling failed at getting content Details")
@@ -119,10 +142,8 @@ function pollYouTube(cb) {
         return;
       }
       var time = moment().subtract(1, 'hour').add(5, 'minutes');
-      logYoutubePoll(time);
       var finalResults = results.items.filter(function(item){
-        logYoutubePoll(item.snippet.title + " " + item.snippet.publishedAt + " " + moment(item.snippet.publishedAt).from(time));
-        return time.isBefore(item.snippet.publishedAt);
+        return item.snippet.channelId === channelId; // For sanity's sake. Blame YouTube.
       }).map(function(item){
         logYoutubePoll(item.snippet.title + " - [" + formatTime(item.contentDetails.duration) + "]");
         return {
@@ -147,7 +168,7 @@ function pollReddit(cb) {
     var results = data.data.children.map(function (item) {
       return item.data
     }).filter(function(item){
-      // logRedditPoll(item.title + " - " + moment.unix(item.created_utc).fromNow() + ' - ' + item.name);
+      logRedditPoll(item.title + " - " + moment.unix(item.created_utc).fromNow() + ' - ' + item.name);
       // logRedditPoll(item)
       return item.domain.match(/youtu(be\.(com|ca)|\.be)/)
     }).map(function (item){
@@ -227,12 +248,12 @@ function postSetup (err, results) {
     return;
   }
   log(results);
-  uploadedPlaylist = results[0];
+  channelId = results[0];
   pollingLoop();
 };
 
 var timeout = null;
-var uploadedPlaylist = null;
+var channelId = null;
 var shutdown = false;
 
 function setupTimeout() {
