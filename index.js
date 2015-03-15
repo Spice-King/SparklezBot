@@ -119,7 +119,9 @@ function pollYouTube(cb) {
         return;
       }
       var time = moment().subtract(1, 'hour').add(5, 'minutes');
+      logYoutubePoll(time);
       var finalResults = results.items.filter(function(item){
+        logYoutubePoll(item.snippet.title + " " + item.snippet.publishedAt + " " + moment(item.snippet.publishedAt).from(time));
         return time.isBefore(item.snippet.publishedAt);
       }).map(function(item){
         logYoutubePoll(item.snippet.title + " - [" + formatTime(item.contentDetails.duration) + "]");
