@@ -168,12 +168,13 @@ function pollReddit(cb) {
     var results = data.data.children.map(function (item) {
       return item.data
     }).filter(function(item){
-      logRedditPoll(item.title + " - " + moment.unix(item.created_utc).fromNow() + ' - ' + item.name);
+      // logRedditPoll(item.title + " - " + moment.unix(item.created_utc).fromNow() + ' - ' + item.name);
       // logRedditPoll(item)
       return item.domain.match(/youtu(be\.(com|ca)|\.be)/)
     }).map(function (item){
       return item.url.match(/^https?:\/\/(?:www.)?youtu(?:be.(?:(?:com|ca)\/watch\?v=)|\.be\/)(.+)$/im)[1];
     })
+    logRedditPoll("Found " + results.length + " item(s) of interest.");
     logRedditPoll("Finished polling Reddit");
     cb(null, results);
   }, function(error) {
