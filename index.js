@@ -117,24 +117,16 @@ function eliminateDuplicates(arr) {
 
 function pollYouTube(cb) {
   logYoutubePoll("Started polling YouTube");
-  youtube.activities.list({publishedAfter: moment().subtract(1, 'hour').add(5, 'minutes').toISOString() ,part: 'contentDetails,snippet', channelId: channelId, maxResults: 50}, function (err, results) {
+  youtube.search.list({publishedAfter: moment().subtract(1, 'hour').add(5, 'minutes').toISOString(), part: 'snippet', channelId: channelId, maxResults: 50}, function (err, results) {
     if (err) {
       logYoutubePoll("YouTube polling failed at fetching play list items")
       cb("YouTube Error: " + err);
       return;
     }
-    var data = results.items.filter(function(item){
-      return item.snippet.type === "upload" || item.snippet.type === "playlistItem";
-    }).map(function(item){
-      if (item.contentDetails.upload !== undefined) {
-        return item.contentDetails.upload.videoId;
-      } else if (item.contentDetails.playlistItem !== undefined) {
-        return item.contentDetails.playlistItem.resourceId.videoId;
-      }
-      // return item.contentDetails.videoId;
+    var data = results.items.map(function(item){
+      return item.id.videoId;
     })
-    data = eliminateDuplicates(data);
-    // logYoutubePoll(data);
+    // data = eliminateDuplicates(data);
     youtube.videos.list({part: 'snippet,contentDetails', fields: "items(contentDetails,id,snippet)", id: data.join(',')}, function(err, results) {
       if (err) {
         logYoutubePoll("YouTube polling failed at getting content Details")
