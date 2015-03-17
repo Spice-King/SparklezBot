@@ -64,7 +64,7 @@ function setupReddit(cb) {
   })
 };
 
-var redditTokenInterval = setInterval(setupReddit, 55 * 60 * 1000);
+setInterval(setupReddit, 55 * 60 * 1000).unref();
 
 // function redditHoneInOnTime(after, before, cb) {
 //   opts = {}
@@ -267,7 +267,6 @@ function cleanupTimeout() {
 
 function shutdownLoop() {
   shutdown = true;
-  clearInterval(redditTokenInterval);
   cleanupTimeout();
 };
 
