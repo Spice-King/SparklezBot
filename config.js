@@ -1,7 +1,7 @@
 var package = require('./package');
 module.exports = {
-  userAgent: process.title + ":" + package.name + ":v" + package.version,
-  pollingTime: parseInt(process.env.BOT_POLLING_TIME || 1000),
+  userAgent: process.title + ":" + (process.env.BOT_USER_AGENT || process.env.BOT_REDDIT_USERNAME) + ":v" + package.version,
+  pollingTime: parseInt(process.env.BOT_POLLING_TIME || 60000),
   youtube: {
     channel: process.env.BOT_YOUTUBE_CHANNEL || "YouTubeDev",
     apiKey: process.env.BOT_YOUTUBE_API_KEY || function (){throw "Get you YouTube API key into BOT_YOUTUBE_API_KEY"}(),
@@ -11,7 +11,7 @@ module.exports = {
     username: process.env.BOT_REDDIT_USERNAME || function(){throw "Get your Reddit account name into BOT_REDDIT_USERNAME"}(),
     password: process.env.BOT_REDDIT_PASSWORD || function(){throw "Get your Reddit account passwork into BOT_REDDIT_PASSWORD"}(),
     subreddit: process.env.BOT_REDDIT_SUBREDDIT || "BotTest",
-    limitResults: parseInt(process.env.BOT_REDDIT_LIMIT_RESULTS || 5),
+    limitResults: parseInt(process.env.BOT_REDDIT_LIMIT_RESULTS || 50),
     scope: ['read', 'submit'],
     oauth: {
       consumerKey: process.env.BOT_REDDIT_OAUTH_KEY || function(){throw "Get your Reddit oAuth2 Key into BOT_REDDIT_OAUTH_KEY"}(),
