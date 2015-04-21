@@ -8,7 +8,7 @@ Config is all done though environment variables.
 | Name | Desciption | Default |
 |------|------------|---------|
 | BOT_USER_AGENT | Set to change part of the user agent for the Reddit API `node:YourRedditAccountNameHere:v1.0.0` | defauts to the Reddit account name |
-| BOT_POLLING_TIME | Delay to check for videos again, in miliseconds | 60000 |
+| BOT_POLLING_TIME | Delay to check for videos again, or set to 0 to not check again, in miliseconds | 60000 |
 | BOT_YOUTUBE_CHANNEL | The channel name to look at | YouTubeDev |
 | BOT_YOUTUBE_API_KEY | your API key for accessing the YouTube API, get one [here](https://developers.google.com/) | No default, set it or I don't start! |
 | BOT_YOUTUBE_LIMIT_RESULTS | Limit how many results you get from YT | 5 |

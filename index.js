@@ -247,7 +247,7 @@ function postSetup (err, results) {
 
 var timeout = null;
 var channelId = null;
-var shutdown = false;
+var shutdown = config.pollingTime === 0;
 
 function setupTimeout() {
   if (timeout != null) {
